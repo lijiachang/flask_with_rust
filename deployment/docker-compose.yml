@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  flask_app:
+    container_name: fib-calculator
+    image: "flask-fib:latest"
+    restart: always # Restart the container if it crashes
+    ports:
+      - "5002:5002"  # 通过端口映射，将容器的5002端口映射到宿主机的5002端口
+    expose:
+      - "5002" # 暴露容器的5002端口
+
+  nginx:
+    container_name: nginx
+    image: "nginx:1.13.5"
+    ports:
+      - "80:80"
+    links:
+      - flask_app
+    depends_on:
+      - flask_app
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
