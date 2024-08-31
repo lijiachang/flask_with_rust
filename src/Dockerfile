@@ -3,6 +3,9 @@ FROM python:3.10.14
 WORKDIR /app
 ADD . /app
 
+RUN rm ./config.yml
+RUN mv live_config.yml ./config.yml
+
 RUN apt-get update && apt-get install -y python3-dev gcc  # 能够编译Rust代码并使用二进制文件
 
 RUN pip install --upgrade pip setuptools wheel
