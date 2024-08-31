@@ -130,3 +130,9 @@ INFO  [alembic.runtime.migration] Will assume transactional DDL.
 INFO  [alembic.runtime.migration] Running upgrade  -> 247189195619, create-fib-entry
 ```
 可以看到数据库迁移系统可以正常工作  
+
+连续访问两次计算请求,可以看到第二次是从数据库中获取的  
+http://127.0.0.1:5002/calculate_v2/12  
+your entered number is: 12, which has a fibonacci number of: 144  
+http://127.0.0.1:5002/calculate_v2/12  
+your entered number is: 12, which has an existing fibonacci number of: 144  
