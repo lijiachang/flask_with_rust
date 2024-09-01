@@ -1,5 +1,18 @@
-# flask_with_rust
-Injecting Rust into a Python Flask App. 将Rust注入到Python Flask应用程序
+# Speed Your Python with Rust: flask_with_rust
+Injecting Rust into a Python Flask App.   
+将Rust注入到Python Flask应用程序
+
+项目使用Flask、Rust、Postgres、Celery、Nginx、Docker、Docker-compose构建一个Web应用程序，计算斐波那契数列。  
+* 使用Flask作为Web框架，Flask使用当前最新的3.0版本
+* 使用数据库存储计算结果，避免重复计算
+* 使用Celery异步处理计算任务
+* 使用Docker和Docker-compose部署应用程序
+* 使用Alembic进行数据库迁移
+* 使用Nginx作为Web服务器
+* 使用Gunicorn作为WSGI服务器
+
+* 使用Rust编写计算斐波那契数列的函数，提高计算速度
+
 
 ## 构建Python Flask应用程序
 使用Nginx、数据库、Celery（实现消息总线）来构建一个Flask Web应用程序  
@@ -143,3 +156,124 @@ http://127.0.0.1:5002/calculate_v2/12
 your entered number is: 12, which has a fibonacci number of: 144  
 http://127.0.0.1:5002/calculate_v2/12  
 your entered number is: 12, which has an existing fibonacci number of: 144  
+
+
+## 使用Celery异步处理计算任务
+```text
+(.venv) ➜  deployment git:(main) ✗ docker-compose up                  
+[+] Running 4/5
+ ✔ Container main-dev-redis    Running                                                                                                                                                                                                              0.0s 
+ ✔ Container fib-dev-postgres  Running                                                                                                                                                                                                              0.0s 
+ ✔ Container fib-calculator    Running                                                                                                                                                                                                              0.0s 
+ ✔ Container nginx             Created                                                                                                                                                                                                              0.0s 
+ ⠹ Container fib-worker        Recreated                                                                                                                                                                                                            0.3s 
+Attaching to fib-calculator, fib-dev-postgres, fib-worker, main-dev-redis, nginx
+fib-worker        | /usr/local/lib/python3.10/site-packages/celery/platforms.py:829: SecurityWarning: You're running the worker with superuser privileges: this is
+fib-worker        | absolutely not recommended!
+fib-worker        | 
+fib-worker        | Please specify a different user using the --uid option.
+fib-worker        | 
+fib-worker        | User information: uid=0 euid=0 gid=0 egid=0
+fib-worker        | 
+fib-worker        |   warnings.warn(SecurityWarning(ROOT_DISCOURAGED.format(
+fib-worker        |  
+fib-worker        |  -------------- celery@e0c3e7871c4e v5.4.0 (opalescent)
+fib-worker        | --- ***** ----- 
+fib-worker        | -- ******* ---- Linux-6.6.22-linuxkit-aarch64-with-glibc2.36 2024-09-01 08:09:41
+fib-worker        | - *** --- * --- 
+fib-worker        | - ** ---------- [config]
+fib-worker        | - ** ---------- .> app:         __main__:0xffffb7791870
+fib-worker        | - ** ---------- .> transport:   redis://main_cache:6379/0
+fib-worker        | - ** ---------- .> results:     redis://main_cache:6379/0
+fib-worker        | - *** --- * --- .> concurrency: 4 (prefork)
+fib-worker        | -- ******* ---- .> task events: OFF (enable -E to monitor tasks in this worker)
+fib-worker        | --- ***** ----- 
+fib-worker        |  -------------- [queues]
+fib-worker        |                 .> celery           exchange=celery(direct) key=celery
+fib-worker        |                 
+fib-worker        | 
+fib-worker        | [tasks]
+fib-worker        |   . task_queue.fib_calc_task.calculate_fib
+fib-worker        | 
+fib-worker        | [2024-09-01 08:09:41,961: WARNING/MainProcess] /usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+fib-worker        | whether broker connection retries are made during startup in Celery 6.0 and above.
+fib-worker        | If you wish to retain the existing behavior for retrying connections on startup,
+fib-worker        | you should set broker_connection_retry_on_startup to True.
+fib-worker        |   warnings.warn(
+fib-worker        | 
+fib-worker        | [2024-09-01 08:09:41,970: INFO/MainProcess] Connected to redis://main_cache:6379/0
+fib-worker        | [2024-09-01 08:09:41,970: WARNING/MainProcess] /usr/local/lib/python3.10/site-packages/celery/worker/consumer/consumer.py:508: CPendingDeprecationWarning: The broker_connection_retry configuration setting will no longer determine
+fib-worker        | whether broker connection retries are made during startup in Celery 6.0 and above.
+fib-worker        | If you wish to retain the existing behavior for retrying connections on startup,
+fib-worker        | you should set broker_connection_retry_on_startup to True.
+fib-worker        |   warnings.warn(
+fib-worker        | 
+fib-worker        | [2024-09-01 08:09:41,973: INFO/MainProcess] mingle: searching for neighbors
+fib-worker        | [2024-09-01 08:09:42,983: INFO/MainProcess] mingle: all alone
+fib-worker        | [2024-09-01 08:09:43,006: INFO/MainProcess] celery@e0c3e7871c4e ready.
+fib-calculator    | 2024-09-01 08:10:18,733 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+fib-calculator    | 2024-09-01 08:10:18,733 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-calculator    | 2024-09-01 08:10:18,736 INFO sqlalchemy.engine.Engine select current_schema()
+fib-calculator    | 2024-09-01 08:10:18,736 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-calculator    | 2024-09-01 08:10:18,738 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+fib-calculator    | 2024-09-01 08:10:18,738 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-calculator    | 2024-09-01 08:10:18,738 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+fib-calculator    | 2024-09-01 08:10:18,741 INFO sqlalchemy.engine.Engine SELECT fib_entries.id AS fib_entries_id, fib_entries.input_number AS fib_entries_input_number, fib_entries.calculated_number AS fib_entries_calculated_number 
+fib-calculator    | FROM fib_entries 
+fib-calculator    | WHERE fib_entries.input_number = %(input_number_1)s
+fib-calculator    | 2024-09-01 08:10:18,741 INFO sqlalchemy.engine.Engine [generated in 0.00014s] {'input_number_1': 15}
+fib-calculator    | 2024-09-01 08:10:18,743 INFO sqlalchemy.engine.Engine ROLLBACK
+fib-calculator    | 2024-09-01 08:10:27,504 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+fib-calculator    | 2024-09-01 08:10:27,506 INFO sqlalchemy.engine.Engine SELECT fib_entries.id AS fib_entries_id, fib_entries.input_number AS fib_entries_input_number, fib_entries.calculated_number AS fib_entries_calculated_number 
+fib-calculator    | FROM fib_entries 
+fib-calculator    | WHERE fib_entries.input_number = %(input_number_1)s
+fib-calculator    | 2024-09-01 08:10:27,506 INFO sqlalchemy.engine.Engine [cached since 8.765s ago] {'input_number_1': 15}
+fib-calculator    | 2024-09-01 08:10:27,510 INFO sqlalchemy.engine.Engine ROLLBACK
+fib-calculator    | 2024-09-01 08:10:57,843 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+fib-calculator    | 2024-09-01 08:10:57,845 INFO sqlalchemy.engine.Engine SELECT fib_entries.id AS fib_entries_id, fib_entries.input_number AS fib_entries_input_number, fib_entries.calculated_number AS fib_entries_calculated_number 
+fib-calculator    | FROM fib_entries 
+fib-calculator    | WHERE fib_entries.input_number = %(input_number_1)s
+fib-calculator    | 2024-09-01 08:10:57,845 INFO sqlalchemy.engine.Engine [cached since 39.1s ago] {'input_number_1': 32}
+fib-calculator    | 2024-09-01 08:10:57,950 INFO sqlalchemy.engine.Engine ROLLBACK
+fib-worker        | [2024-09-01 08:10:57,963: INFO/MainProcess] Task task_queue.fib_calc_task.calculate_fib[03682898-55fe-4c6f-819e-b11067677b3c] received
+fib-worker        | 2024-09-01 08:10:59,307 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+fib-worker        | 2024-09-01 08:10:59,308 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-worker        | [2024-09-01 08:10:59,307: INFO/ForkPoolWorker-4] select pg_catalog.version()
+fib-worker        | [2024-09-01 08:10:59,308: INFO/ForkPoolWorker-4] [raw sql] {}
+fib-worker        | 2024-09-01 08:10:59,312 INFO sqlalchemy.engine.Engine select current_schema()
+fib-worker        | 2024-09-01 08:10:59,312 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-worker        | [2024-09-01 08:10:59,312: INFO/ForkPoolWorker-4] select current_schema()
+fib-worker        | [2024-09-01 08:10:59,312: INFO/ForkPoolWorker-4] [raw sql] {}
+fib-worker        | [2024-09-01 08:10:59,314: INFO/ForkPoolWorker-4] show standard_conforming_strings
+fib-worker        | [2024-09-01 08:10:59,314: INFO/ForkPoolWorker-4] [raw sql] {}
+fib-worker        | 2024-09-01 08:10:59,314 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+fib-worker        | 2024-09-01 08:10:59,314 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-worker        | 2024-09-01 08:10:59,317 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+fib-worker        | [2024-09-01 08:10:59,317: INFO/ForkPoolWorker-4] BEGIN (implicit)
+fib-worker        | 2024-09-01 08:10:59,334 INFO sqlalchemy.engine.Engine INSERT INTO fib_entries (input_number, calculated_number) VALUES (%(input_number)s, %(calculated_number)s) RETURNING fib_entries.id
+fib-worker        | [2024-09-01 08:10:59,334: INFO/ForkPoolWorker-4] INSERT INTO fib_entries (input_number, calculated_number) VALUES (%(input_number)s, %(calculated_number)s) RETURNING fib_entries.id
+fib-worker        | 2024-09-01 08:10:59,335 INFO sqlalchemy.engine.Engine [generated in 0.00046s] {'input_number': 32, 'calculated_number': 2178309}
+fib-worker        | [2024-09-01 08:10:59,335: INFO/ForkPoolWorker-4] [generated in 0.00046s] {'input_number': 32, 'calculated_number': 2178309}
+fib-worker        | [2024-09-01 08:10:59,340: INFO/ForkPoolWorker-4] COMMIT
+fib-worker        | 2024-09-01 08:10:59,340 INFO sqlalchemy.engine.Engine COMMIT
+fib-worker        | [2024-09-01 08:10:59,350: INFO/ForkPoolWorker-4] Task task_queue.fib_calc_task.calculate_fib[03682898-55fe-4c6f-819e-b11067677b3c] succeeded in 1.3337355839999958s: None
+fib-calculator    | 2024-09-01 08:12:36,892 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+fib-calculator    | 2024-09-01 08:12:36,892 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-calculator    | 2024-09-01 08:12:36,896 INFO sqlalchemy.engine.Engine select current_schema()
+fib-calculator    | 2024-09-01 08:12:36,896 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-calculator    | 2024-09-01 08:12:36,897 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+fib-calculator    | 2024-09-01 08:12:36,897 INFO sqlalchemy.engine.Engine [raw sql] {}
+fib-calculator    | 2024-09-01 08:12:36,898 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+fib-calculator    | 2024-09-01 08:12:36,907 INFO sqlalchemy.engine.Engine SELECT fib_entries.id AS fib_entries_id, fib_entries.input_number AS fib_entries_input_number, fib_entries.calculated_number AS fib_entries_calculated_number 
+fib-calculator    | FROM fib_entries 
+fib-calculator    | WHERE fib_entries.input_number = %(input_number_1)s
+fib-calculator    | 2024-09-01 08:12:36,907 INFO sqlalchemy.engine.Engine [generated in 0.00031s] {'input_number_1': 32}
+fib-calculator    | 2024-09-01 08:12:36,912 INFO sqlalchemy.engine.Engine ROLLBACK
+
+```
+
+连续访问两次 大数字的计算请求, 使用Celery异步处理  
+http://0.0.0.0:5002/calculate_v3/32  
+your entered number is: 32, which is too large to calculate immediately, and has been sent to the queue  
+http://0.0.0.0:5002/calculate_v3/32  
+your entered number is: 32, which has an existing fibonacci number of: 2178309  

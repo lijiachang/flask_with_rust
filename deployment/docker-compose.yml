@@ -35,3 +35,20 @@ services:
       - 'POSTGRES_USER=user'
       - 'POSTGRES_DB=fib'
       - 'POSTGRES_PASSWORD=password'
+
+  main_cache:
+    container_name: main-dev-redis
+    image: "redis:5.0.3"
+    restart: always
+    ports:
+      - "6379:6379"
+
+  queue_worker:
+    container_name: fib-worker
+    image: "flask-fib:latest"
+    restart: always
+    entrypoint: "celery -A app.celery worker -l info"
+    depends_on:
+      - main_cache
+    links:
+      - main_cache
