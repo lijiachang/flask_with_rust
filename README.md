@@ -279,8 +279,10 @@ http://0.0.0.0:5002/calculate_v3/32
 your entered number is: 32, which has an existing fibonacci number of: 2178309  
 
 
+使用Rust构建新的v4视图后  
 现在可以选择python或Rust计算  
-http://0.0.0.0:5002/calculate_v4/python/11  
-your entered number is: 11, which has a fibonacci number of: 89, took 3.0994415283203125e-05 seconds  
-http://0.0.0.0:5002/calculate_v4/rust/12  
-your entered number is: 12, which has a fibonacci number of: 144, took 0.00055694580078125 seconds  
+http://0.0.0.0:5002/calculate_v4/python/17  
+your entered number is: 17, which has a fibonacci number of: 1597, took 0.0003750324249267578 seconds  
+http://0.0.0.0:5002/calculate_v4/rust/18  
+your entered number is: 18, which has a fibonacci number of: 2584, took 0.0003132820129394531 seconds  
+可以看到尽管Rust请求的数字更大，但是速度比Python更快

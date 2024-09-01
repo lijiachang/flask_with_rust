@@ -5,7 +5,7 @@ from data_access import dal
 from models.databases.fib_entry import FibEntry
 
 from task_queue.engine import make_celery
-from task_queue.fib_calc_task import create_calculate_fib
+from task_queue.fib_calc_task import create_calculate_fib, create_calculate_fib_rust
 
 from fib_calcs import calc_fib_number
 from fib_calcs.enums import CalculationMethod
@@ -14,6 +14,7 @@ app = Flask(__name__)
 celery = make_celery(app)
 
 calculate_fib = create_calculate_fib(input_celery=celery)
+calculate_fib_rust = create_calculate_fib_rust(input_celery=celery)
 
 
 @app.route('/')
@@ -78,7 +79,6 @@ def calculate_v4(method, number):
     :param number:
     :return:
     """
-    print(method)
     fib_calc = dal.session.query(FibEntry).filter(FibEntry.input_number == number).one_or_none()
     if fib_calc is None:
         if number < 50:  # 立即计算，并将结果存储到数据库
@@ -89,7 +89,7 @@ def calculate_v4(method, number):
             return (f"your entered number is: {number}, "
                     f"which has a fibonacci number of: {fib_number}, took {time_taken} seconds")
         else:
-            calculate_fib.delay(number)
+            calculate_fib_rust.delay(number)
             return (f"your entered number is: {number}, which is too large to calculate immediately, "
                     f"and has been sent to the queue")
 
