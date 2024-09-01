@@ -7,6 +7,9 @@ from models.databases.fib_entry import FibEntry
 from task_queue.engine import make_celery
 from task_queue.fib_calc_task import create_calculate_fib
 
+from fib_calcs import calc_fib_number
+from fib_calcs.enums import CalculationMethod
+
 app = Flask(__name__)
 celery = make_celery(app)
 
@@ -27,6 +30,7 @@ def calculate(number):
 @app.route('/calculate_v2/<int:number>')
 def calculate_v2(number):
     """
+    v2 使用数据库做缓存
     检查数据库中是否有已经计算过的斐波那契数列的值
     如果没有，则计算并存储到数据库中
     如果有，则直接返回数据库中的值
@@ -44,6 +48,7 @@ def calculate_v2(number):
 @app.route('/calculate_v3/<int:number>')
 def calculate_v3(number):
     """
+    v3 使用Celery做异步计算
     检查输入的数字是否小于31并且不在数据库，
     如果数字太大 则会将计算发送到Celery并返回一条消息，告诉用于已被发送到队列
     """
@@ -55,6 +60,34 @@ def calculate_v3(number):
             dal.session.add(new_calc)
             dal.session.commit()
             return f"your entered number is: {number}, which has a fibonacci number of: {calc.fib_number}"
+        else:
+            calculate_fib.delay(number)
+            return (f"your entered number is: {number}, which is too large to calculate immediately, "
+                    f"and has been sent to the queue")
+
+    return f"your entered number is: {number}, which has an existing fibonacci number of: {fib_calc.calculated_number}"
+
+
+@app.route('/calculate_v4/<string:method>/<int:number>')
+def calculate_v4(method, number):
+    """
+    v4 使用Rust计算
+    检查输入的数字是否小于31并且不在数据库，
+    如果数字太大 则会将计算发送到Celery并返回一条消息，告诉用于已被发送到队列
+    :param method: 可选python或者rust
+    :param number:
+    :return:
+    """
+    print(method)
+    fib_calc = dal.session.query(FibEntry).filter(FibEntry.input_number == number).one_or_none()
+    if fib_calc is None:
+        if number < 50:  # 立即计算，并将结果存储到数据库
+            fib_number, time_taken = calc_fib_number(input_number=number, method=method)
+            new_calc = FibEntry(input_number=number, calculated_number=fib_number)
+            dal.session.add(new_calc)
+            dal.session.commit()
+            return (f"your entered number is: {number}, "
+                    f"which has a fibonacci number of: {fib_number}, took {time_taken} seconds")
         else:
             calculate_fib.delay(number)
             return (f"your entered number is: {number}, which is too large to calculate immediately, "

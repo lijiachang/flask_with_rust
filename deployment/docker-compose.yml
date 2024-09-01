@@ -26,7 +26,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
 
   postgres:
-    container_name: fib-dev-postgres
+    container_name: fib-live-postgres
     image: "postgres:11.2"
     restart: always
     ports:
@@ -37,7 +37,7 @@ services:
       - 'POSTGRES_PASSWORD=password'
 
   main_cache:
-    container_name: main-dev-redis
+    container_name: main-live-redis
     image: "redis:5.0.3"
     restart: always
     ports:

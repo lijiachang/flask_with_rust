@@ -277,3 +277,10 @@ http://0.0.0.0:5002/calculate_v3/32
 your entered number is: 32, which is too large to calculate immediately, and has been sent to the queue  
 http://0.0.0.0:5002/calculate_v3/32  
 your entered number is: 32, which has an existing fibonacci number of: 2178309  
+
+
+现在可以选择python或Rust计算  
+http://0.0.0.0:5002/calculate_v4/python/11  
+your entered number is: 11, which has a fibonacci number of: 89, took 3.0994415283203125e-05 seconds  
+http://0.0.0.0:5002/calculate_v4/rust/12  
+your entered number is: 12, which has a fibonacci number of: 144, took 0.00055694580078125 seconds  
