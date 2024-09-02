@@ -3,15 +3,20 @@ Injecting Rust into a Python Flask App.
 将Rust注入到Python Flask应用程序
 
 项目使用Flask、Rust、Postgres、Celery、Nginx、Docker、Docker-compose构建一个Web应用程序，计算斐波那契数列。  
+
+第一阶段
 * 使用Flask作为Web框架，Flask使用当前最新的3.0版本
 * 使用数据库存储计算结果，避免重复计算
 * 使用Celery异步处理计算任务
 * 使用Docker和Docker-compose部署应用程序
 * 使用Alembic进行数据库迁移
 * 使用Nginx作为Web服务器
-* 使用Gunicorn作为WSGI服务器
+* 使用Gunicorn作为WSGI服务器  
 
+
+第二阶段
 * 使用Rust编写计算斐波那契数列的函数，提高计算速度
+* 使用Rust Diesel管理与数据库的模型和连接 (项目地址: https://github.com/lijiachang/rust-db-diesel)
 
 
 ## 构建Python Flask应用程序
