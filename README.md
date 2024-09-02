@@ -290,4 +290,10 @@ http://0.0.0.0:5002/calculate_v4/python/17
 your entered number is: 17, which has a fibonacci number of: 1597, took 0.0003750324249267578 seconds  
 http://0.0.0.0:5002/calculate_v4/rust/18  
 your entered number is: 18, which has a fibonacci number of: 2584, took 0.0003132820129394531 seconds  
-可以看到尽管Rust请求的数字更大，但是速度比Python更快
+可以看到尽管Rust请求的数字更大，但是速度比Python更快  
+
+使用Rust Diesel管理数据库  
+验证数据访问:  
+http://0.0.0.0:5002/get  
+[{'input number': 12, 'fib number': 144}, {'input number': 15, 'fib number': 610}, {'input number': 32, 'fib number': 2178309}]  
+得到的数据是通过模块Rust Diesel获取的数据

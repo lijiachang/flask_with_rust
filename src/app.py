@@ -8,7 +8,6 @@ from task_queue.engine import make_celery
 from task_queue.fib_calc_task import create_calculate_fib, create_calculate_fib_rust
 
 from fib_calcs import calc_fib_number
-from fib_calcs.enums import CalculationMethod
 
 app = Flask(__name__)
 celery = make_celery(app)
@@ -94,6 +93,15 @@ def calculate_v4(method, number):
                     f"and has been sent to the queue")
 
     return f"your entered number is: {number}, which has an existing fibonacci number of: {fib_calc.calculated_number}"
+
+
+# 使用rust diesel获取数据库中的数据
+from rust_db_diesel import get_fib_entries
+
+
+@app.route('/get')
+def get():
+    return str(get_fib_entries(dal.url))
 
 
 @app.teardown_request
